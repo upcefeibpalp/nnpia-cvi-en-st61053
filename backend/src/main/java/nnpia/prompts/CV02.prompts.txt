@@ -1,0 +1,12 @@
+7. Vytvoření složky prompts a přidání Spring Boot DevTools
+"How to add Spring Boot DevTools dependecy?"
+chatgpt
+https://docs.spring.io/spring-boot/reference/using/devtools.html
+
+8. Teoretické úkoly
+K čemu slouží závislost Spring Boot DevTools?
+Jaká je její největší výhoda?
+
+9. Přidání dvou nových endpointů do UserController
+"Mám uživatele uložené v private HashMap<Long, User> users, jak mám předělat controller a service tak abych mohl zadávat /user?id=1 a vrátila se mi instance třídy User?"
+"/user/{id}"
