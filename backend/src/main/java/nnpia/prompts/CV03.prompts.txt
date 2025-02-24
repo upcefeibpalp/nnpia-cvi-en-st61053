@@ -1,0 +1,3 @@
+7. Logování
+Jak upravit application.properties tak aby logovala SQL dotazy.
+

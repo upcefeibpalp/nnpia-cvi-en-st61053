@@ -1,5 +1,6 @@
 package nnpia.controllers;
 
+import lombok.AllArgsConstructor;
 import nnpia.domain.User;
 import nnpia.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,31 +9,40 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Collection;
+import java.util.Collections;
+
 @RestController
+@AllArgsConstructor
 public class UserController {
 
     private UserService userService;
 
     public UserController() {
-        this.userService = new UserService();
+
     }
 
-    @Autowired
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
 
     @Autowired
     public void setUserService(UserService userService) {
         this.userService = userService;
     }
 
-    @GetMapping("/user")
-    public String findUsers() {
+    @GetMapping("/users")
+    public Collection<User> findUsers(@RequestParam(required = false) String email) {
+        if (email != null) {
+            User user = userService.findByEmail(email);
+
+            if (user == null) {
+                return Collections.emptyList();
+            }
+
+            return Collections.singletonList(user);
+        }
         return this.userService.findUsers();
     }
 
-    @GetMapping("/user/{id}")
+    @GetMapping("/users/{id}")
     public User findUser(@PathVariable Long id) {
         User user = userService.findUser(id);
         if (user != null) {

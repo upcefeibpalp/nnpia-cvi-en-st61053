@@ -1,54 +1,39 @@
 package nnpia.services;
 
 import jakarta.annotation.PostConstruct;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import nnpia.domain.User;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import nnpia.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.stream.Collectors;
+import java.util.Collection;
+import java.util.Optional;
 
 @Service
+@Slf4j
+@AllArgsConstructor
 public class UserService {
 
-    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
-    private HashMap<Long, User> users;
+    private final UserRepository userRepository;
 
-    public UserService() {
-    }
 
     @PostConstruct
     public void init() {
-        users = new HashMap<>();
-        users.put(1L, new User(1L, "John Doe", "john@doe.com"));
-        users.put(2L, new User(2L, "Daniel Welsh", "daniel@welsh.com"));
     }
 
     public User findUser(Long id) {
-        if (users.isEmpty()) {
-            logger.warn("User map is empty!");
-            return null;
-        }
+        Optional<User> user = userRepository.findById(id);
+        log.debug("Ziskan uzivatel " + user.orElse(null));
 
-        return users.get(id);
+        return user.orElse(null);
     }
 
-    public String findUsers() {
-        if (users.isEmpty()) {
-            logger.warn("User map is empty!");
-            return "No users found.";
-        }
-
-        String userList = users.values().stream()
-                .map(User::toString)
-                .collect(Collectors.joining(", "));
-
-        logger.info("Users found: {}", userList);
-        return userList;
+    public Collection<User> findUsers() {
+        return userRepository.findAll();
     }
 
-    public User getUserById(Long id) {
-        return users.get(id);  // Vrátí uživatele podle ID, nebo null pokud neexistuje
+    public User findByEmail(String email) {
+        return userRepository.findUsersByEmail(email).orElse(null);
     }
 }
