@@ -22,7 +22,7 @@ public class UserService {
     public void init() {
     }
 
-    public User findUser(Long id) {
+    public User findUser(String id) {
         Optional<User> user = userRepository.findById(id);
         log.debug("Ziskan uzivatel " + user.orElse(null));
 
@@ -35,5 +35,21 @@ public class UserService {
 
     public User findByEmail(String email) {
         return userRepository.findUsersByEmail(email).orElse(null);
+    }
+
+    public User createUser(User user) {
+        return userRepository.save(user);
+    }
+
+    public void deleteUser(String id) {
+        userRepository.deleteById(id);
+    }
+
+    public User findById(String id) {
+        return userRepository.findById(id).orElse(null);
+    }
+
+    public User updateUser(User existingUser) {
+        return userRepository.save(existingUser);
     }
 }

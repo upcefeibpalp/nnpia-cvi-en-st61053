@@ -20,18 +20,10 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        Address address = new Address(0L, "Dukelská 293", "Zásmuky", "281 44");
-        User user = new User(0L, "admin@upce.cz", "Heslo123", address );
+        Address address = new Address("Dukelská 293", "Zásmuky", "281 44");
+        User user = new User("admin@upce.cz", "Heslo123", address );
 
-        if (!userRepository.existsById(user.getId())) {
-            log.debug("Admin user created: {}", user);
-            userRepository.save(user);
-        }
-
-        Address address = new Address(0L, "Dukelská 293", "Zásmuky", "281 44");
-        User user = new User(0L, "admin@upce.cz", "Heslo123", address );
-
-        if (!userRepository.existsById(user.getId())) {
+        if (!userRepository.existsByEmail(user.getEmail())) {
             log.debug("Admin user created: {}", user);
             userRepository.save(user);
         }
