@@ -1,16 +1,22 @@
 package nnpia.controllers;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import nnpia.domain.User;
+import nnpia.dto.ErrorResponseDto;
 import nnpia.dto.UserRequestDto;
 import nnpia.dto.UserResponseDto;
+import nnpia.exceptions.UserAlreadyExistsException;
+import nnpia.exceptions.UserNotFoundException;
 import nnpia.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -59,6 +65,18 @@ public class UserController {
         }
     }
 
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<ErrorResponseDto> handleUserNotFound(UserNotFoundException ex, HttpServletRequest request) {
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto(
+                HttpStatus.NOT_FOUND.value(),
+                "Not Found",
+                ex.getMessage(),
+                LocalDateTime.now(),
+                request.getRequestURI()
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponseDto);
+    }
+
     @PostMapping
     public ResponseEntity<?> createUser(@RequestBody UserRequestDto user) {
 
@@ -73,6 +91,20 @@ public class UserController {
                     .password(createdUser.getPassword()).build()
         );
     }
+
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponseDto> handleUserAlreadyExists(UserAlreadyExistsException ex, HttpServletRequest request) {
+        ErrorResponseDto errorResponseDto = new ErrorResponseDto(
+                HttpStatus.CONFLICT.value(),
+                "Conflict",
+                ex.getMessage(),
+                LocalDateTime.now(),
+                request.getRequestURI()
+        );
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponseDto);
+    }
+
+
     @PutMapping("/{id}")
     public ResponseEntity<?> updateUser(@PathVariable String id, @RequestBody UserRequestDto userDto) {
         log.info("Request for updating user with id {}: {}", id, userDto);

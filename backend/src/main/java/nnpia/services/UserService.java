@@ -4,6 +4,8 @@ import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import nnpia.domain.User;
+import nnpia.exceptions.UserAlreadyExistsException;
+import nnpia.exceptions.UserNotFoundException;
 import nnpia.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
@@ -23,9 +25,10 @@ public class UserService {
     }
 
     public User findUser(String id) {
-        Optional<User> user = userRepository.findById(id);
-        log.debug("Ziskan uzivatel " + user.orElse(null));
+        Optional<User> user = Optional.ofNullable(userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User not found for ID: " + id)));
 
+        log.debug("Ziskan uzivatel " + user.orElse(null));
         return user.orElse(null);
     }
 
@@ -38,6 +41,10 @@ public class UserService {
     }
 
     public User createUser(User user) {
+        // Pokud uživatel s daným emailem existuje, vyhoď výjimku
+        if (userRepository.findByEmail(user.getEmail()) != null) {
+            throw new UserAlreadyExistsException("User already exists with email: " + user.getEmail());
+        }
         return userRepository.save(user);
     }
 
